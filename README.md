@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![TOTP Manager](card.png)
+![TOTP Manager](assets/banner.png)
 
 **A secure and modern TOTP authenticator Chrome extension**
 
