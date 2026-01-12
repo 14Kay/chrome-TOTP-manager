@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+	font-family: 'GoogleSans';
+	src: url('/fonts/GoogleSans-Regular.ttf') format('trueType');
+	font-weight: 500;
+	font-style: normal;
+}
+
+body {
+	margin: 0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-family: 'GoogleSans';
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+	display: none;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.1);
+	border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(0, 0, 0, 0.15);
+}
+
+/* 深色模式下的滚动条 */
+.dark ::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.15);
+}
+
+/* 公共页面样式 */
+.page-container {
+	width: 310px;
+	height: 540px;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+}
+
+.dark .page-container {
+	@apply bg-gray-900;
+}
+
+.page-header {
+	padding: 0.5rem;
+}
+
+.card-block {
+	@apply bg-white dark:bg-gray-800 rounded-lg p-4;
+}
+
+.input {
+	background-color: #FAFAFA;
+	font-family: 'GoogleSans';
+}
+
+.dark .input {
+	background-color: #374151;
+}
+
+.input::placeholder {
+	font-family: 'GoogleSans';
+	font-size: 14px;
+}
+
+/* 倒计时圆环动画 */
+@keyframes countdown {
+	from {
+		stroke-dashoffset: var(--start-offset);
+	}
+
+	to {
+		stroke-dashoffset: var(--end-offset);
+	}
+}
+
+/* 启用硬件加速以获得更流畅的动画 */
+.countdown-circle {
+	will-change: stroke-dashoffset;
+	transform: translateZ(0);
+}

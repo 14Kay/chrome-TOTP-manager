@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOTP Manager Banner Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a1a1a;
+        }
+
+        /* Canvas Size - 1280x800 for Chrome Store Large Tile */
+        .canvas {
+            width: 1280px;
+            height: 800px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Abstract Background Shapes */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+        }
+
+        .blob-1 {
+            width: 600px;
+            height: 600px;
+            background: #3b82f6;
+            top: -200px;
+            left: -200px;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: #8b5cf6;
+            bottom: -100px;
+            right: -100px;
+            animation: float 12s infinite ease-in-out reverse;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: #06b6d4;
+            bottom: 20%;
+            left: 20%;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(30px, 50px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        /* Grid Pattern Overlay */
+        .grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Content Layout */
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            width: 100%;
+            padding: 0 80px;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .left-panel {
+            flex: 0 0 45%;
+            color: white;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 60px !important;
+            line-height: 1.1;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(to right, #ffffff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+        }
+
+        p.desc {
+            font-size: 24px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 100px;
+            color: #93c5fd;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Mockup Window */
+        .mockup-window {
+            /* Adjusted to your screenshot width */
+            /* Adjusted to your screenshot height */
+            background: #1e1e1e;
+            border-radius: 12px;
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(59, 130, 246, 0.2);
+            position: relative;
+            transition: transform 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mockup-header {
+            height: 28px;
+            /* Slightly smaller header for smaller window */
+            background: #2d2d2d;
+            border-bottom: 1px solid #3d3d3d;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Smaller dots */
+        .dot-red {
+            background: #ff5f56;
+        }
+
+        .dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .dot-green {
+            background: #27c93f;
+        }
+
+        /* Screenshot Placeholder */
+        .screenshot-area {
+            flex: 1;
+            background: #111;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 14px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .screenshot-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* or contain, depending on if you want full fill */
+            display: block;
+        }
+
+        /* Controls */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            background: #333;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #444;
+        }
+
+        .btn.active {
+            background: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="btn active" onclick="setMode('light')">Light Mode</button>
+        <button class="btn" onclick="setMode('dark')">Dark Mode</button>
+        <button class="btn" onclick="document.getElementById('file-input').click()">Upload Custom</button>
+    </div>
+
+    <!-- This is the banner canvas -->
+    <div class="canvas">
+        <!-- Background Elements -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="grid-pattern"></div>
+
+        <div class="content">
+            <!-- Left Side: Text -->
+            <div class="left-panel">
+                <div class="tag">Chrome Extension</div>
+                <h1>TOTP Manager</h1>
+                <p class="desc">
+                    Secure, modern 2FA authenticator designed for privacy. <br>
+                    Manage all your passwords locally with QR code migration and instant search.
+                </p>
+                <div class="flex gap-4">
+                    <!-- Feature Icons/Badges -->
+                    <div class="flex items-center gap-2 text-gray-400 text-sm">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                        <span>Offline First</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-400 text-sm">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <span>Fast Search</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-400 text-sm">
+                        <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Secure</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Mockup -->
+            <div class="right-panel">
+                <div class="mockup-window">
+                    <div class="mockup-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                    <div class="screenshot-area" onclick="document.getElementById('file-input').click()">
+                        <img id="preview-img" src="./assets/light.png" alt="App Screenshot">
+                    </div>
+                </div>
+                <!-- Interactive decorative ring -->
+                <div class="decoration-ring"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="loadImage(event)">
+
+    <script>
+        function setMode(mode) {
+            const img = document.getElementById('preview-img');
+            const btns = document.querySelectorAll('.btn');
+
+            // Update image source
+            if (mode === 'light') {
+                img.src = './assets/light.png';
+            } else if (mode === 'dark') {
+                img.src = './assets/dark.png';
+            }
+
+            // Update active button state
+            btns.forEach(btn => {
+                if (btn.innerText.toLowerCase().includes(mode)) {
+                    btn.classList.add('active');
+                } else if (!btn.innerText.includes('Upload')) {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function loadImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('preview-img');
+                    img.src = e.target.result;
+
+                    // Reset active states for custom upload
+                    document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                    document.querySelector('.btn:last-child').classList.add('active');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+
+</html>
