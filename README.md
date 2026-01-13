@@ -6,7 +6,7 @@
 
 **A secure and modern TOTP authenticator Chrome extension**
 
-[![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome)](https://chrome.google.com/webstore)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome)](https://chromewebstore.google.com/detail/totp-manager/jphklddbmhkonfegmbpebbigagecfjdn)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
@@ -30,7 +30,18 @@
 
 ### Installation
 
-1. Download the latest release from [Releases](https://github.com/yourusername/totp-manager/releases)
+**Method 1: Chrome Web Store (Recommended)**
+
+<a href="https://chromewebstore.google.com/detail/totp-manager/jphklddbmhkonfegmbpebbigagecfjdn">
+    <img src="https://img.shields.io/badge/Chrome_Web_Store-Available-blue?style=for-the-badge&logo=google-chrome" alt="Chrome Web Store" />
+</a>
+
+1. Visit the [TOTP Manager page on Chrome Web Store](https://chromewebstore.google.com/detail/totp-manager/jphklddbmhkonfegmbpebbigagecfjdn)
+2. Click "Add to Chrome" to install
+
+**Method 2: Manual Installation (Developer Build)**
+
+1. Download the latest release from [Releases](https://github.com/14Kay/chrome-TOTP-manager/releases)
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable "Developer mode" in the top right
 4. Click "Load unpacked" and select the `dist` folder
