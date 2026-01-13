@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTOTP } from '@/hooks/useTOTP'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { Account } from '@/types'
@@ -7,12 +8,13 @@ interface AccountCardProps {
 	selectable?: boolean
 	selected?: boolean
 	onSelect?: (id: string) => void
-	onCopy?: () => void
+	onCopy?: (issuer: string) => void
 }
 
 const LOGO_MAP: Record<string, string> = {
 	'alibabacloud': 'alibabacloud-icon.svg',
 	'alibaba': 'alibabacloud-icon.svg',
+	'aliyun': 'alibabacloud-icon.svg',
 	'apple': 'apple-icon.svg',
 	'bing': 'bing-icon.svg',
 	'cloudflare': 'cloudflare-icon.svg',
@@ -47,12 +49,22 @@ export function AccountCard({ account, selectable, selected, onSelect, onCopy }:
 	const { t } = useLanguage()
 	const isLowTime = remaining <= 5
 	const displayLogo = account.logo || matchLogo(account.issuer)
+	const [isPressed, setIsPressed] = useState(false)
 
 	const handleCopy = () => {
 		navigator.clipboard.writeText(code)
-		onCopy?.()
+		onCopy?.(account.issuer)
 	}
 
+	const handleMouseDown = () => {
+		setIsPressed(true)
+	}
+
+	const handleMouseUp = () => {
+		setIsPressed(false)
+	}
+
+	const tooltipText = t('clickToCopy')
 	const radius = 9
 	const circumference = 2 * Math.PI * radius
 	const offset = ((30 - remaining) / 30) * circumference
@@ -67,7 +79,7 @@ export function AccountCard({ account, selectable, selected, onSelect, onCopy }:
 					className="w-3 h-3 flex-shrink-0"
 				/>
 			)}
-			<div className={`bg-white dark:bg-gray-800 rounded-md ${selectable ? 'p-1 py-2' : 'p-3'} flex-1 min-w-0`}>
+			<div className={`bg-white dark:bg-gray-800 rounded-md ${selectable ? 'p-1 py-2' : 'p-3'} flex-1 min-w-0 transition-transform duration-150 ${isPressed ? 'scale-95' : 'scale-100'}`}>
 
 				{/* 顶部：Logo + 邮箱 (左) 和 倒计时 (右) */}
 				<div className="flex items-start justify-between items-center mb-4">
@@ -120,8 +132,11 @@ export function AccountCard({ account, selectable, selected, onSelect, onCopy }:
 				{/* 验证码区域 */}
 				<div
 					onClick={handleCopy}
+					onMouseDown={handleMouseDown}
+					onMouseUp={handleMouseUp}
+					onMouseLeave={handleMouseUp}
 					className={`flex items-center justify-between cursor-pointer rounded-lg transition min-w-0 ${selectable ? 'gap-x-2' : 'gap-x-5'}`}
-					title={t('copiedToClipboard')}
+					title={tooltipText}
 				>
 					<div className="flex gap-1.5">
 						{code.slice(0, 3).split('').map((digit, i) => (

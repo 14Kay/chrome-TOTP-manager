@@ -351,7 +351,10 @@ function App() {
 											selectable={exportMode || deleteMode}
 											selected={selectedIds.has(account.id)}
 											onSelect={toggleSelect}
-											onCopy={() => setToast({ message: t('copiedToClipboard'), type: 'success' })}
+											onCopy={(issuer) => setToast({
+												message: t('copiedWithPlatform').replace('{platform}', issuer),
+												type: 'success'
+											})}
 										/>
 									))}
 								</div>
