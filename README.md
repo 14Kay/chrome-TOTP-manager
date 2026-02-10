@@ -21,6 +21,7 @@
 - 🌍 **Bilingual** - Full support for English and Chinese (简体中文)
 - 📤 **Import/Export** - Batch import and export accounts via QR codes
 - 🔍 **Quick Search** - Instantly find accounts with real-time search
+- 👆 **Drag & Drop** - Long-press to reorder accounts easily
 - ⌨️ **Keyboard Shortcuts** - Efficient navigation with hotkeys
 - 🔄 **Google Authenticator Compatible** - Import from and export to Google Authenticator
 - 🚀 **High Performance** - Optimized with lazy loading and batched storage
