@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "TOTP Manager",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "A secure, offline-first TOTP authenticator for Chrome. Manage your 2FA codes with ease, featuring import/export and dark mode.",
 	"author": "14K",
 	"action": {
