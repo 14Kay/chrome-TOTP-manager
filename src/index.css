@@ -96,3 +96,16 @@ body {
 	will-change: stroke-dashoffset;
 	transform: translateZ(0);
 }
+
+/* 拖拽排序 - 浮动幽灵元素 */
+.drag-ghost {
+	cursor: grabbing;
+	will-change: top;
+	backface-visibility: hidden;
+}
+
+/* 拖拽排序 - 正在被拖拽的原始元素（占位） */
+.drag-source {
+	opacity: 0 !important;
+	visibility: hidden !important;
+}

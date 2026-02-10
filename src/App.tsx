@@ -3,6 +3,7 @@ import { Toast, ToastType } from '@/components/Toast'
 import { translations } from '@/i18n/translations'
 import { AccountCard } from '@/components/AccountCard'
 import { useAccounts } from '@/hooks/useAccounts'
+import { useDragSort } from '@/hooks/useDragSort'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useDarkMode } from '@/hooks/useDarkMode'
 import { useWebAuthn } from '@/hooks/useWebAuthn'
@@ -17,7 +18,7 @@ function App() {
 	// Batch all storage initialization into one call
 	const { data: initialData, isLoading } = useInitialData()
 
-	const { accounts, addAccount, addAccounts, removeAccounts, replaceAccount } = useAccounts(initialData?.accounts)
+	const { accounts, addAccount, addAccounts, removeAccounts, replaceAccount, reorderAccounts } = useAccounts(initialData?.accounts)
 	const { language, changeLanguage, t } = useLanguage(initialData?.language)
 	const { isDark, toggleDarkMode } = useDarkMode(initialData?.darkMode)
 	const { isRegistered, register, authenticate } = useWebAuthn(initialData?.webauthnCredentialId)
@@ -46,15 +47,23 @@ function App() {
 
 
 
+	// 拖拽排序 - 在非搜索/非导出/非删除模式下才启用
+	const dragEnabled = !search && !exportMode && !deleteMode
+	const { items: sortedAccounts, getDragItemProps } = useDragSort(
+		accounts,
+		reorderAccounts,
+		dragEnabled
+	)
+
 	const filteredAccounts = useMemo(() => {
-		if (!search) return accounts
+		if (!search) return sortedAccounts
 		const lower = search.toLowerCase()
-		return accounts.filter(
+		return sortedAccounts.filter(
 			(acc) =>
 				acc.issuer.toLowerCase().includes(lower) ||
 				acc.account.toLowerCase().includes(lower)
 		)
-	}, [accounts, search])
+	}, [sortedAccounts, search])
 
 	const toggleSelect = (id: string) => {
 		setSelectedIds((prev) => {
@@ -344,19 +353,23 @@ function App() {
 						) : (
 							<>
 								<div className="space-y-3 overflow-x-hidden w-full">
-									{filteredAccounts.map((account) => (
-										<AccountCard
-											key={account.id}
-											account={account}
-											selectable={exportMode || deleteMode}
-											selected={selectedIds.has(account.id)}
-											onSelect={toggleSelect}
-											onCopy={(issuer) => setToast({
-												message: t('copiedWithPlatform').replace('{platform}', issuer),
-												type: 'success'
-											})}
-										/>
-									))}
+									{filteredAccounts.map((account, index) => {
+										const dragProps = dragEnabled ? getDragItemProps(index) : {}
+										return (
+											<div key={account.id} {...dragProps}>
+												<AccountCard
+													account={account}
+													selectable={exportMode || deleteMode}
+													selected={selectedIds.has(account.id)}
+													onSelect={toggleSelect}
+													onCopy={(issuer) => setToast({
+														message: t('copiedWithPlatform').replace('{platform}', issuer),
+														type: 'success'
+													})}
+												/>
+											</div>
+										)
+									})}
 								</div>
 								<div className="text-xs text-gray-400 dark:text-gray-500 text-center pt-3">
 									{t('clickToCopy')}

@@ -41,5 +41,11 @@ export function useAccounts(initialAccounts: Account[] = []) {
 		chrome.storage.sync.set({ [STORAGE_KEY]: newAccounts })
 	}
 
-	return { accounts, addAccount, addAccounts, removeAccounts, replaceAccount }
+	// 拖拽排序后直接替换整个列表顺序
+	const reorderAccounts = (reordered: Account[]) => {
+		setAccounts(reordered)
+		chrome.storage.sync.set({ [STORAGE_KEY]: reordered })
+	}
+
+	return { accounts, addAccount, addAccounts, removeAccounts, replaceAccount, reorderAccounts }
 }
